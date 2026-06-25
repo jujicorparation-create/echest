@@ -24,11 +24,20 @@ jobs:
           mkdir -p gradle/wrapper
           curl -L "https://github.com/gradle/gradle/raw/v4.9.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
-      - name: Download dependencies
+      - name: Download Forge dev JAR
         run: |
           mkdir -p libs
           curl -L "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-14.23.5.2860/forge-1.12.2-14.23.5.2860-universal.jar" -o libs/forge.jar
+          curl -L "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-14.23.5.2860/forge-1.12.2-14.23.5.2860-userdev.jar" -o libs/forge-userdev.jar || true
           curl -L "https://piston-data.mojang.com/v1/objects/0f275bc1547d01fa5f56ba34bdc87d981ee12daf/client.jar" -o libs/minecraft.jar
+          ls -la libs/
+
+      - name: Extract deobf classes from userdev
+        run: |
+          cd libs
+          if [ -f forge-userdev.jar ]; then
+            jar tf forge-userdev.jar | head -20
+          fi
 
       - name: Grant execute permission
         run: chmod +x gradlew
