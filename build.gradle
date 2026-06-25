@@ -1,14 +1,4 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url = "https://maven.minecraftforge.net" }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-    }
-}
-
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'java'
 
 version = '1.0.0'
 group = 'com.echestmod'
@@ -17,13 +7,15 @@ archivesBaseName = 'echestmod'
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava.options.encoding = 'UTF-8'
 
-minecraft {
-    version = "1.12.2-14.23.5.2860"
-    runDir = "run"
-    mappings = "stable_39"
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.minecraftforge.net" }
+    maven { url = "https://libraries.minecraft.net" }
 }
 
-dependencies {}
+dependencies {
+    compileOnly 'net.minecraftforge:forge:1.12.2-14.23.5.2860:universal'
+}
 
 jar {
     manifest {
@@ -31,13 +23,5 @@ jar {
             'Implementation-Title': project.name,
             'Implementation-Version': project.version
         ])
-    }
-}
-
-processResources {
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
-    filesMatching('mcmod.info') {
-        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 }
