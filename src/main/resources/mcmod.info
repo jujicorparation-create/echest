@@ -1,0 +1,10 @@
+[
+  {
+    "modid": "echestmod",
+    "name": "EChest Auto Deposit",
+    "description": "Auto deposits diamond/iron/emerald/gold blocks into team ender chest every 5 minutes",
+    "version": "1.0.0",
+    "mcversion": "1.12.2",
+    "authorList": ["AutoMod"]
+  }
+]
