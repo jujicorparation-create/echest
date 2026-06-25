@@ -19,6 +19,11 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
 
+      - name: Download Gradle Wrapper JAR
+        run: |
+          mkdir -p gradle/wrapper
+          curl -L "https://github.com/gradle/gradle/raw/v4.9.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
+
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -26,15 +31,13 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
 
       - name: Grant execute permission
         run: chmod +x gradlew
 
       - name: Setup ForgeGradle
         run: ./gradlew --no-daemon setupCiWorkspace
-        
+
       - name: Build
         run: ./gradlew --no-daemon build
 
