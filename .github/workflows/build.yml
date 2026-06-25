@@ -35,9 +35,6 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Setup ForgeGradle
-        run: ./gradlew --no-daemon setupDevWorkspace
-
       - name: Build
         run: ./gradlew --no-daemon build
 
