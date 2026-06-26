@@ -24,30 +24,19 @@ jobs:
           mkdir -p gradle/wrapper
           curl -L "https://github.com/gradle/gradle/raw/v4.9.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
-      - name: Setup dependencies via Maven
+      - name: Get deobfuscated Forge dev jar
         run: |
           mkdir -p libs
-          mvn dependency:get -Dartifact=net.minecraftforge:forge:1.12.2-14.23.5.2860:jar:universal -Ddest=libs/forge.jar -Dmaven.repo.remote=https://maven.minecraftforge.net || true
+          # Forge 1.12.2 dev jar contains deobfuscated classes
           curl -L "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-14.23.5.2860/forge-1.12.2-14.23.5.2860-universal.jar" -o libs/forge.jar
-          curl -L "https://piston-data.mojang.com/v1/objects/0f275bc1547d01fa5f56ba34bdc87d981ee12daf/client.jar" -o libs/minecraft.jar
-          curl -L "https://files.minecraftforge.net/maven/de/oceanlabs/mcp/mcp_stable/39-1.12/mcp_stable-39-1.12-srg.zip" -o mcp_srg.zip || true
+          # Use fernflower/SpecialSource approach - get MCP bot jar which has deobf classes
+          curl -L "https://github.com/MinecraftForge/ForgeGradle/releases/download/FG_2.3/ForgeGradle-2.3.jar" -o libs/forgegradletools.jar 2>/dev/null || true
+          # Download already-deobfuscated jar from alternative source
+          curl -L "https://repo1.maven.org/maven2/net/minecraftforge/forge/1.12.2-14.23.5.2860/forge-1.12.2-14.23.5.2860.jar" -o libs/forge-dev.jar 2>/dev/null || true
           ls -la libs/
-
-      - name: Deobfuscate Minecraft JAR
-        run: |
-          pip install requests 2>/dev/null || true
-          cat > deobf.py << 'PYEOF'
-          import zipfile, os, shutil
-
-          # Check jar contents
-          with zipfile.ZipFile('libs/minecraft.jar', 'r') as z:
-              names = z.namelist()
-              mc_classes = [n for n in names if n.endswith('.class') and 'net/minecraft' in n]
-              print(f"Minecraft classes found: {len(mc_classes)}")
-              if mc_classes:
-                  print("Sample:", mc_classes[:3])
-          PYEOF
-          python3 deobf.py
+          # Check what's in forge.jar
+          jar tf libs/forge.jar | grep "net/minecraft/client/Minecraft" | head -5 || echo "Not found in forge.jar"
+          jar tf libs/forge.jar | grep "cpw\|net/minecraftforge" | head -5
 
       - name: Grant execute permission
         run: chmod +x gradlew
